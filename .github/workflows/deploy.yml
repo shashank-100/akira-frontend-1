@@ -1,0 +1,58 @@
+name: Deploy Next.js App
+
+on:
+  push:
+    branches:
+      - main # Run this workflow when code is pushed to the main branch
+  pull_request:
+    branches:
+      - main # Run tests on pull requests to main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Build Next.js app
+        run: npm run build
+
+      - name: Run Tests
+        run: npm test # Change this if you use a different test command
+
+  deploy:
+    needs: build # Run deployment only if the build succeeds
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main' # Deploy only from main branch
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Build Next.js app
+        run: npm run build
+
+      - name: Deploy to Vercel
+        run: |
+          npm install -g vercel
+          vercel --prod --token=${{ secrets.VERCEL_TOKEN }}
