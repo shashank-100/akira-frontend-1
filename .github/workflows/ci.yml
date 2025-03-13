@@ -1,5 +1,5 @@
-name: Build and Test Frontend
-run-name: Build and Test Frontend
+name: Build and Deploy Fe
+run-name: Build and Deploy Fe
 on:
   push:
     branches:
@@ -8,7 +8,7 @@ on:
     branches:
       - main
 jobs:
-  lint:
+  build:
     name: Run Lint
     runs-on: ubuntu-latest
     steps:
@@ -29,3 +29,29 @@ jobs:
 
       - name: Run build
         run: npm run build
+
+  deploy:
+    needs: build 
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main' 
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Build Next.js app
+        run: npm run build
+
+      - name: Deploy to Vercel
+        run: |
+          npm install -g vercel
+          vercel --prod --token=${{ secrets.VERCEL_TOKEN }}
