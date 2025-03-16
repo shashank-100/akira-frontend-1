@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Space_Grotesk } from "next/font/google";
+import Link from "next/link";
 
 const space = Space_Grotesk({ subsets: ["latin"] });
 
@@ -14,8 +15,9 @@ export default function Home() {
         </p>
       </div>
       <div className="flex flex-col gap-6 pb-10">
-        <Button variant="secondary">Get Started</Button>
-        <Button>Login</Button>
+        <Button asChild>
+          <Link href="/login">Login</Link>
+        </Button>
       </div>
     </div>
   );

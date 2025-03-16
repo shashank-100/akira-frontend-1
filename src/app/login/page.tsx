@@ -6,6 +6,7 @@ import { ArrowLeft } from "lucide-react";
 import { Space_Grotesk } from "next/font/google";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
+import { setCookie } from 'cookies-next';
 
 const space = Space_Grotesk({ subsets: ["latin"] });
 
@@ -22,7 +23,16 @@ export default function LoginPage() {
     formState: { errors },
   } = useForm<FormFields>();
 
-  const onSubmit: SubmitHandler<FormFields> = (data) => console.log(data);
+  const onSubmit: SubmitHandler<FormFields> = (data) => {
+    console.log(data);
+    // Mock login success - in a real app, this would verify credentials first
+    // Set a demo cookie for our middleware to check
+    setCookie('auth-session', 'demo-user-session', { 
+      maxAge: 60 * 60, // 1 hour
+      path: '/' 
+    });
+    router.push('/wallet');
+  };
 
   return (
     <div className="flex flex-col h-screen bg-black text-[#e6e6e6]">
