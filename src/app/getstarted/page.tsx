@@ -12,6 +12,7 @@ type FormFields = {
   email: string;
   password: string;
   confirmpassword: string;
+  terms: boolean;
 };
 
 export default function GetStarted() {
@@ -64,9 +65,16 @@ export default function GetStarted() {
               {errors[name as keyof FormFields] && <div>{errors[name as keyof FormFields]?.message}</div>}
             </div>
           ))}   
-          <div className="flex flex-col mt-16 pb-10 w-full">
+          <div className="flex items-start gap-2 mt-4">
+            <input type="checkbox" {...register("terms", { required: "You must accept the Terms & Conditions" })} />
+            <label className="text-sm">
+              By ticking this box, I confirm that I have read and accept the <span className="text-[#db5930]">Terms & Conditions</span> and <span className="text-[#db5930]">Privacy Policy</span>.
+            </label>
+          </div>
+          {errors.terms && <div className="text-[#db5930] text-sm">{errors.terms.message}</div>}
+          <div className="flex flex-col pb-10 w-full">
             <Button type="submit" variant="secondary">
-              Login
+              Create your account
             </Button>
           </div>
         </form>
