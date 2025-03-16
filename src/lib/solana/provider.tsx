@@ -1,38 +1,44 @@
-import { WalletAdapterNetwork } from '@solana/wallet-adapter-base';
-import { ConnectionProvider, WalletProvider } from '@solana/wallet-adapter-react';
-import { WalletModalProvider } from '@solana/wallet-adapter-react-ui';
-import { UnsafeBurnerWalletAdapter } from '@solana/wallet-adapter-wallets';
-import { clusterApiUrl } from '@solana/web3.js';
-import React, { FC, ReactNode, useMemo } from 'react';
+'use client';
+
+import dynamic from 'next/dynamic';
+import { FC, ReactNode } from 'react';
+
+// Dynamically import wallet components to avoid SSR issues
+const WalletProvider = dynamic(
+    () => import('@solana/wallet-adapter-react').then(mod => mod.WalletProvider),
+    { ssr: false }
+);
+
+const ConnectionProvider = dynamic(
+    () => import('@solana/wallet-adapter-react').then(mod => mod.ConnectionProvider),
+    { ssr: false }
+);
+
+const WalletModalProvider = dynamic(
+    () => import('@solana/wallet-adapter-react-ui').then(mod => mod.WalletModalProvider),
+    { ssr: false }
+);
 
 // Required for wallet adapter UI
 import '@solana/wallet-adapter-react-ui/styles.css';
 
 export const SolanaProvider: FC<{ children: ReactNode }> = ({ children }) => {
+    if (typeof window === 'undefined') {
+        return <>{children}</>;
+    }
+
+    // Import these only on client side
+    const { WalletAdapterNetwork } = require('@solana/wallet-adapter-base');
+    const { UnsafeBurnerWalletAdapter } = require('@solana/wallet-adapter-wallets');
+    const { clusterApiUrl } = require('@solana/web3.js');
+
     // The network can be set to 'devnet', 'testnet', or 'mainnet-beta'.
     const network = WalletAdapterNetwork.Devnet;
 
     // You can also provide a custom RPC endpoint.
-    const endpoint = useMemo(() => clusterApiUrl(network), [network]);
+    const endpoint = clusterApiUrl(network);
 
-    const wallets = useMemo(
-        () => [
-            /**
-             * Wallets that implement either of these standards will be available automatically.
-             *
-             *   - Solana Mobile Stack Mobile Wallet Adapter Protocol
-             *     (https://github.com/solana-mobile/mobile-wallet-adapter)
-             *   - Solana Wallet Standard
-             *     (https://github.com/solana-labs/wallet-standard)
-             *
-             * If you wish to support a wallet that supports neither of those standards,
-             * instantiate its legacy wallet adapter here.
-             */
-            new UnsafeBurnerWalletAdapter(),
-        ],
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-        [network]
-    );
+    const wallets = [new UnsafeBurnerWalletAdapter()];
 
     return (
         <ConnectionProvider endpoint={endpoint}>

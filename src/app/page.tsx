@@ -15,9 +15,6 @@ export default function Home() {
         </p>
       </div>
       <div className="flex flex-col gap-6 pb-10">
-        <Button variant="secondary" asChild>
-          <Link href="/wallet">Connect Wallet</Link>
-        </Button>
         <Button asChild>
           <Link href="/login">Login</Link>
         </Button>
