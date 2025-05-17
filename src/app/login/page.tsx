@@ -74,7 +74,7 @@ export default function LoginPage() {
             Reset password
           </Link>
 
-          <Button type="submit" variant="secondary" className="mt-16 pb-10 w-full">
+          <Button type="submit" variant="secondary" className="mt-16 w-full">
             Login
           </Button>
         </form>
